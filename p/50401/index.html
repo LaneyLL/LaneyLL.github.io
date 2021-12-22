@@ -1,0 +1,213 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>文献-An Effective Fusion and Tile Size Model for Optimizing Image Processing Pipelines | neylin's blog</title><meta name="keywords" content="fusion, tiling"><meta name="author" content="Li Lin"><meta name="copyright" content="Li Lin"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="一种优化图像处理流程的有效fusion及tile尺寸模型 摘要 在通用和特定领域语言(DSL)编译器中，循环嵌套的fusion的有效模型仍然是一个挑战。困难往往来自于分组选择的组合爆炸以及它们与并行性和局部性的相互作用。本文提出了一种用于图像处理管道的高性能领域特定编译器的fusion算法。该fusion算法由动态规划驱动，探索了以往方法没有覆盖的融合可能性空间，并由成本函数驱动，在捕获优化准则">
+<meta property="og:type" content="article">
+<meta property="og:title" content="文献-An Effective Fusion and Tile Size Model for Optimizing Image Processing Pipelines">
+<meta property="og:url" content="https://linl.zone/p/50401/index.html">
+<meta property="og:site_name" content="neylin&#39;s blog">
+<meta property="og:description" content="一种优化图像处理流程的有效fusion及tile尺寸模型 摘要 在通用和特定领域语言(DSL)编译器中，循环嵌套的fusion的有效模型仍然是一个挑战。困难往往来自于分组选择的组合爆炸以及它们与并行性和局部性的相互作用。本文提出了一种用于图像处理管道的高性能领域特定编译器的fusion算法。该fusion算法由动态规划驱动，探索了以往方法没有覆盖的融合可能性空间，并由成本函数驱动，在捕获优化准则">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://linl.zone/img/Fusion.jpg">
+<meta property="article:published_time" content="2021-12-22T00:45:24.659Z">
+<meta property="article:modified_time" content="2021-12-22T13:13:00.130Z">
+<meta property="article:author" content="Li Lin">
+<meta property="article:tag" content="fusion, tiling">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://linl.zone/img/Fusion.jpg"><link rel="shortcut icon" href="/img/head_new.jpg"><link rel="canonical" href="https://linl.zone/p/50401/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":400},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":100,"languages":{"author":"作者: Li Lin","link":"链接: ","source":"来源: neylin's blog","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '文献-An Effective Fusion and Tile Size Model for Optimizing Image Processing Pipelines',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-12-22 21:13:00'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const fontSizeVal = saveToLocal.get('global-font-size')
+    if (fontSizeVal !== undefined) {
+      document.documentElement.style.setProperty('--global-font-size', fontSizeVal + 'px')
+    }
+    
+    const detectApple = () => {
+      if (GLOBAL_CONFIG_SITE.isHome && /iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/head_new.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">文章</div><div class="length-num">17</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">标签</div><div class="length-num">10</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">分类</div><div class="length-num">9</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 目录</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> aboutME</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/Fusion.jpg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">neylin's blog</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 目录</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> aboutME</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">文献-An Effective Fusion and Tile Size Model for Optimizing Image Processing Pipelines</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2021-12-22T00:45:24.659Z" title="发表于 2021-12-22 08:45:24">2021-12-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-12-22T13:13:00.130Z" title="更新于 2021-12-22 21:13:00">2021-12-22</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/loop-tiling/">loop tiling</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="文献-An Effective Fusion and Tile Size Model for Optimizing Image Processing Pipelines"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p><strong><img src="https://pic-1303833960.cos.ap-shanghai.myqcloud.com/img/image-20211222085447616.png" alt="image-20211222085447616"></strong></p>
+<h1>一种优化图像处理流程的有效fusion及tile尺寸模型</h1>
+<h2 id="摘要">摘要</h2>
+<p>在通用和特定领域语言(DSL)编译器中，循环嵌套的fusion的有效模型仍然是一个挑战。困难往往来自于分组选择的组合爆炸以及它们与并行性和局部性的相互作用。<strong>本文提出了一种用于图像处理管道的高性能领域特定编译器的fusion算法</strong>。该fusion算法由动态规划驱动，探索了以往方法没有覆盖的融合可能性空间，并由成本函数驱动，在捕获优化准则方面比以往方法更具体和精确。融合模型特别适合于应用在PolyMage和Halide转换和优化序列，这是两个最近的用于图像处理管道的dsl。在两种最先进的共享内存多核架构上，当我们在PolyMage中实现模型驱动技术时，相对于PolyMage方法(使用自动调优来辅助其模型)和Halide的自动方法(高达2.46倍)，我们的模型驱动技术提供了显著的改进(高达4.32倍)。</p>
+<h2 id="1-引入">1.引入</h2>
+<p>图像处理计算在科学和工程的几个领域中都是至关重要的。这些领域包括计算机视觉、嵌入式视觉、计算摄影和医学成像。它们可以在各种架构上执行，从带有实时处理图像的摄像机的嵌入式系统，到处理大量聚合图像数据的数据中心规模的多核服务器集群。随着图像处理技术的日益成熟，某些领域对大量数据和实时性的要求越来越高，需要高性能的图像处理计算的实现。</p>
+<p>图像处理管道通常可以表示为连接的处理阶段或过滤器的有向无环图，其中每个阶段对图像的像素应用一个简单的数据并行操作。管道可能包含几个简单的逐点函数，也可能复杂到包含数百个从逐点到模板操作和缩减的函数。领域特定语言(dsl)，如Halide[16]和PolyMage[11]，提供了高级结构来表示图像处理管道，更重要的是，它们能够进行复杂的代码转换，以增强局域性和并行性。DSL编译器优化图像处理流程的一个关键组件是其融合算法。该算法利用不同图像处理阶段的融合来挖掘生产者和消费者在这些阶段的局域性，而将该问题视为循环嵌套优化中的循环融合问题，其他术语如核融合、算子融合等用于特定的上下文。Halide和PolyMage都是通过特殊的技术，即重叠分块的实现，在多个阶段中执行融合和tiling。利用局部性是很重要的，因为除了从生产和重复使用中获得的重用之外，与其他算法(如BLAS level-3或时间迭代模板计算)不同，没有额外的重用。由于这种优化，在最近的工作中已经报道了惊人的加速[10,11,16]。</p>
+<p>在PolyMage和Halide中使用的自动融合启发式方法都有一个贪婪的方面，即排除了大量的融合可能性。启发式从一个节点开始，以一种特定的方式探索它周围的节点，在评估盈利能力的同时合并并形成更大的组。我们提出了一种不阻止任何有效分组被探索的方法。</p>
+<p>在本文中，我们提出了一种新的融合和tile尺寸确定模型，该模型使用基于动态规划的方法来解决上述最先进的工作中的局限性。此外，PolyMage搜索和自动调优一系列的tile大小，这些tile大小都是2倍或更多的tile重叠(边界冗余计算)阈值，以限制组大小，保持自动调优空间较小。我们的方法是完全由模型驱动的——它通过直接在融合启发式的具体成本函数中合并分块尺寸和相对分块重叠来减轻自动调优的需要。此外，分块大小不受2的幂的限制。综上所述，本文的主要贡献有:</p>
+<ul>
+<li>一个基于动态规划的分组算法，以找到一个好的分组(根据成本函数最优)，以及用于tiling每个组的分块大小，</li>
+<li>与分组算法结合使用的具体成本函数，它考虑了多个方面，包括局部性、并行性和其他比以前的方法更精确的优化标准，</li>
+<li>分组算法的一种增量变体，通过权衡某些选择来控制其运行时间，</li>
+<li>在PolyMage中实现了所提出的技术，并在两种最先进的多核架构上进行了实验评估，结果表明，与PolyMage当前的模型(甚至使用了自动调优)、Halide的自动调度器以及Halide提供的专家手动调度相比，该技术有了显著改进。</li>
+</ul>
+<p>我们的方法适用于DSLs，其中计算可以通过有向无环图表示，图的每个节点是一个工作在密集矩阵或张量上的循环嵌套。除了图像处理领域特定语言外，用于密集线性代数领域特定语言也是一个很好的匹配。加速密集线性代数编译的TensorFlow/XLA[5]是我们的方法可以使用的另一个成果。</p>
+<p>本文的其余部分组织如下。在第2节中，我们描述了最先进的方法的局限性;本节还提供了有关DSL上下文的信息。第3节、第4节和第5节详细描述了我们新方法的所有方面。实验评估将在第6节介绍。相关工作将在第7节中进行讨论，并在第8节中给出结论。</p>
+<h2 id="2-背景和动机">2.背景和动机</h2>
+<p>在本节中，我们将概述PolyMage，然后讨论目前PolyMage[11]和Halide[10]使用的自动分组启发法，以及它们的局限性。</p>
+<h3 id="2-1-PolyMage">2.1 PolyMage</h3>
+<p>PolyMage是一种用于编写图像处理管道的领域特定语言(DSL)。它允许用户直观地表达常见的计算模式，如点式操作、模板、上采样和下采样。PolyMage DSL嵌入在Python中。图1显示了<code>blur</code>的规范，一个简单的图像处理管道，有两个阶段，<code>blurx</code>和<code>blury</code>。管道的参数，比如输入图像的行数和列数，使用第1行中的<code>Parameter</code>构造来声明。管道的输入数据是在第9行使用<code>Image</code>构造声明的。<code>Function</code>用于将图像处理管道的一个阶段声明为一个将多维整数域映射到表示图像像素强度的值的函数。函数的域是在第12 - 14行使用Interval构造定义的。Case构造允许有条件地执行计算。函数blurx(第19 - 22行)将图像作为输入，并在x方向上模糊它。函数blur(第24 - 27行)接受模糊输入的输出，并在它们的方向上模糊它。模糊的输出就是这条管道的输出。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">常见的计算模式：</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">Li Lin</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://linl.zone/p/50401/">https://linl.zone/p/50401/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://linl.zone" target="_blank">neylin's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/fusion-tiling/">fusion, tiling</a></div><div class="post_share"><div class="social-share" data-image="/img/Fusion.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button button--animated"><i class="fas fa-qrcode"></i> 打赏</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.jpg" target="_blank"><img class="post-qr-code-img" src="/img/wechat.jpg" alt="微信"/></a><div class="post-qr-code-desc">微信</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="支付宝"/></a><div class="post-qr-code-desc">支付宝</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/p/50782/"><img class="prev-cover" src="/img/lc1221.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">LeetCode1221</div></div></a></div><div class="next-post pull-right"><a href="/p/50974/"><img class="next-cover" src="/img/lc1222.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">LeetCode1222</div></div></a></div></nav><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="utterances-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/head_new.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Li Lin</div><div class="author-info__description">tech & job</div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">17</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">标签</div><div class="length-num">10</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">分类</div><div class="length-num">9</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LaneyLL"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/LaneyLL" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:136122596@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>公告</span></div><div class="announcement_content">neyLin's studio</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-text">一种优化图像处理流程的有效fusion及tile尺寸模型</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%91%98%E8%A6%81"><span class="toc-text">摘要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%BC%95%E5%85%A5"><span class="toc-text">1.引入</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E8%83%8C%E6%99%AF%E5%92%8C%E5%8A%A8%E6%9C%BA"><span class="toc-text">2.背景和动机</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#2-1-PolyMage"><span class="toc-text">2.1 PolyMage</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/p/50974/" title="LeetCode1222"><img src="/img/lc1222.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="LeetCode1222"/></a><div class="content"><a class="title" href="/p/50974/" title="LeetCode1222">LeetCode1222</a><time datetime="2021-12-22T12:57:18.204Z" title="发表于 2021-12-22 20:57:18">2021-12-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/p/50401/" title="文献-An Effective Fusion and Tile Size Model for Optimizing Image Processing Pipelines"><img src="/img/Fusion.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="文献-An Effective Fusion and Tile Size Model for Optimizing Image Processing Pipelines"/></a><div class="content"><a class="title" href="/p/50401/" title="文献-An Effective Fusion and Tile Size Model for Optimizing Image Processing Pipelines">文献-An Effective Fusion and Tile Size Model for Optimizing Image Processing Pipelines</a><time datetime="2021-12-22T00:45:24.659Z" title="发表于 2021-12-22 08:45:24">2021-12-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/p/50782/" title="LeetCode1221"><img src="/img/lc1221.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="LeetCode1221"/></a><div class="content"><a class="title" href="/p/50782/" title="LeetCode1221">LeetCode1221</a><time datetime="2021-12-21T12:20:51.871Z" title="发表于 2021-12-21 20:20:51">2021-12-21</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/p/12450/" title="复杂神经网络的layer含义"><img src="/img/layer.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="复杂神经网络的layer含义"/></a><div class="content"><a class="title" href="/p/12450/" title="复杂神经网络的layer含义">复杂神经网络的layer含义</a><time datetime="2021-12-20T14:33:53.459Z" title="发表于 2021-12-20 22:33:53">2021-12-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/p/61535/" title="LeetCode1219"><img src="/img/lc1219.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="LeetCode1219"/></a><div class="content"><a class="title" href="/p/61535/" title="LeetCode1219">LeetCode1219</a><time datetime="2021-12-19T13:35:25.722Z" title="发表于 2021-12-19 21:35:25">2021-12-19</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2021 By Li Lin</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">Hi, welcome to my <a href="https://linl.zone/">blog</a>!</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="font-plus" type="button" title="放大字体"><i class="fas fa-plus"></i></button><button id="font-minus" type="button" title="缩小字体"><i class="fas fa-minus"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/katex.min.css"><script src="https://cdn.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.min.js"></script><link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/katex@latest/dist/contrib/copy-tex.css"><script>(() => {
+  document.querySelectorAll('#article-container span.katex-display').forEach(item => {
+    btf.wrap(item, 'div', { class: 'katex-wrap'})
+  })
+})()</script><script>function loadUtterances () {
+  let ele = document.createElement('script')
+  ele.setAttribute('id', 'utterances_comment')
+  ele.setAttribute('src', 'https://utteranc.es/client.js')
+  ele.setAttribute('repo', 'LaneyLL/gittalk')
+  ele.setAttribute('issue-term', 'pathname')
+  let nowTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'photon-dark' : 'github-light'
+  ele.setAttribute('theme', nowTheme)
+  ele.setAttribute('crossorigin', 'anonymous')
+  ele.setAttribute('async', 'true')
+  document.getElementById('utterances-wrap').insertAdjacentElement('afterbegin',ele)
+}
+
+function utterancesTheme () {
+  if (document.querySelector('.utterances-frame')) {
+    const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'photon-dark' : 'github-light'
+    const message = {
+      type: 'set-theme',
+      theme: theme
+    };
+    const iframe = document.querySelector('.utterances-frame');
+    iframe.contentWindow.postMessage(message, 'https://utteranc.es');
+  }
+}
+
+if ('Utterances' === 'Utterances' || !true) {
+  if (true) btf.loadComment(document.getElementById('utterances-wrap'), loadUtterances)
+  else loadUtterances()
+} else {
+  function loadOtherComment () {
+    loadUtterances()
+  }
+}</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
